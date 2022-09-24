@@ -1,0 +1,14 @@
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "title": "do the thing",
+  "description": "because fuck ya"
+}
+
+###
+GET http://localhost:3000/tasks/1e75442b-78ed-4833-b969-573e2f304749
+
+###
+GET http://localhost:3000/tasks?search=beCAUSE&status=IN_PROGRESS
+

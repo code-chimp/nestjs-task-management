@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import Task from './task.model';
 import CreateTaskDto from './dto/create-task.dto';
 import UpdateTaskDto from './dto/update-task.dto';
-import TaskStatus from './enums/task-status.enum';
 import GetTasksFilterDto from './dto/get-tasks-filter.dto';
+import { Task } from './task.entity';
+import TaskStatus from './task-status.enum';
 
 @Controller('tasks')
 export class TasksController {
@@ -12,6 +12,7 @@ export class TasksController {
 
   @Post()
   async create(@Body() dto: CreateTaskDto): Promise<Task> {
+    console.log('controller method');
     return await this._tasksService.create(dto);
   }
 
@@ -30,9 +31,7 @@ export class TasksController {
 
   @Get()
   async getTasks(@Query() dto: GetTasksFilterDto): Promise<Array<Task>> {
-    return Object.keys(dto).length
-      ? await this._tasksService.getFiltered(dto)
-      : await this._tasksService.getAll();
+    return await this._tasksService.getMany(dto);
   }
 
   @Get('/:id')
