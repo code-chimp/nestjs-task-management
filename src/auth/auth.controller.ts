@@ -1,7 +1,8 @@
 import { Body, Controller, HttpCode, Logger, Post } from '@nestjs/common';
+import HttpStatusCodes from '../@enums/HttpStatusCodes';
 import AuthCredentialsDto from './dto/auth-credentials.dto';
 import AuthService from './auth.service';
-import HttpStatusCodes from '../@enums/HttpStatusCodes';
+import IAuthResponse from './@interfaces/IAuthResponse';
 
 @Controller('auth')
 export default class AuthController {
@@ -18,7 +19,7 @@ export default class AuthController {
 
   @Post('/signin')
   @HttpCode(HttpStatusCodes.Ok)
-  async signIn(@Body() dto: AuthCredentialsDto): Promise<string> {
-    return await this.authService.signIn(dto);
+  async signIn(@Body() dto: AuthCredentialsDto): Promise<IAuthResponse> {
+    return await this.authService.login(dto);
   }
 }

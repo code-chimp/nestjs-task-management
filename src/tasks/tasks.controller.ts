@@ -9,7 +9,9 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import TaskStatus from './@enums/task-status.enum';
 import CreateTaskDto from './dto/create-task.dto';
 import UpdateTaskDto from './dto/update-task.dto';
@@ -18,6 +20,7 @@ import Task from './entities/task.entity';
 import TasksService from './tasks.service';
 
 @Controller('tasks')
+@UseGuards(AuthGuard())
 export default class TasksController {
   private logger = new Logger('TasksController');
 

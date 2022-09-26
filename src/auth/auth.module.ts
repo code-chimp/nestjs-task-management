@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtTokenExpiresIn } from '../constants';
 import AuthService from './auth.service';
 import AuthController from './auth.controller';
+import JwtStrategy from './jwt.strategy';
 import User from './entities/user.entity';
 
 @Module({
@@ -16,13 +17,14 @@ import User from './entities/user.entity';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
-        secret: config.get('JWT_SECRET'),
+        secret: config.get<string>('JWT_SECRET'),
         signOptions: { expiresIn: JwtTokenExpiresIn },
       }),
     }),
     TypeOrmModule.forFeature([User]),
   ],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
+  exports: [JwtStrategy, PassportModule],
 })
 export default class AuthModule {}

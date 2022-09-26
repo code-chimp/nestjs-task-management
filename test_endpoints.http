@@ -2,12 +2,14 @@ POST http://localhost:3000/tasks
 Content-Type: application/json
 
 {
-  "title": "do the thing",
-  "description": "because y not"
+  "title": "GRRfaAArGGHg",
+  "description": "Lugurk"
 }
 
 ###
 GET http://localhost:3000/tasks/f124ef2b-3f25-4e84-bed8-4a7c8774f0f0
+Authorization: Bearer {{auth_token}}
+
 
 ###
 GET http://localhost:3000/tasks
@@ -29,6 +31,47 @@ Content-Type: application/json
   "username": "bilbo_bigguns",
   "password": "P@ssw0rd"
 }
+> {%
+  client.test('request success', () => {
+    client.assert(response.status === 200, "incorrect response");
+  });
+
+  client.test('response is json', () => {
+    client.assert(response.contentType.mimeType.includes('application/json'), "response is not json");
+  });
+
+  client.test('has a body', () => {
+    client.assert(!!response.body, "response have no body");
+  });
+
+  client.test('has a json object body', () => {
+    client.assert(!!response.body.accessToken, "response have no tokken");
+  });
+
+  client.log(JSON.stringify(response.body));
+
+  client.global.set("auth_token", response.body.accessToken);
+ %}
+
+###
+POST http://localhost:3000/tasks
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "title": "GRRfaAArGGHg",
+  "description": "Lugurk"
+}
+
+
+### Authorization by token, part 2. Use token to authorize.
+GET https://httpbin.org/headers
+Authorization: Bearer {{auth_token}}
+
+
+### eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJpbGJvX2JpZ2d1bnMiLCJpYXQiOjE2NjQyMTA2NTgsImV4cCI6MTY2NDIxNDI1OH0.Lf_-SHTB_nIteZ67Qk-fWtIRrEnuKvW9Em63Kj8ugK
+
+
 
 
 
