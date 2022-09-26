@@ -1,0 +1,35 @@
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "title": "do the thing",
+  "description": "because y not"
+}
+
+###
+GET http://localhost:3000/tasks/f124ef2b-3f25-4e84-bed8-4a7c8774f0f0
+
+###
+GET http://localhost:3000/tasks
+
+###
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "username": "bilbo_bigguns",
+  "password": "P@ssw0rd"
+}
+
+###
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+  "username": "bilbo_bigguns",
+  "password": "P@ssw0rd"
+}
+
+
+
+

@@ -1,13 +1,26 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { TasksService } from './tasks.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
+import TaskStatus from './@enums/task-status.enum';
 import CreateTaskDto from './dto/create-task.dto';
 import UpdateTaskDto from './dto/update-task.dto';
 import GetTasksFilterDto from './dto/get-tasks-filter.dto';
-import { Task } from './task.entity';
-import TaskStatus from './task-status.enum';
+import Task from './entities/task.entity';
+import TasksService from './tasks.service';
 
 @Controller('tasks')
-export class TasksController {
+export default class TasksController {
+  private logger = new Logger('TasksController');
+
   constructor(private _tasksService: TasksService) {}
 
   @Post()
@@ -31,6 +44,7 @@ export class TasksController {
 
   @Get()
   async getTasks(@Query() dto: GetTasksFilterDto): Promise<Array<Task>> {
+    this.logger.verbose(`retrieving tasks - status: ${dto.status} search: ${dto.search}`);
     return await this._tasksService.getMany(dto);
   }
 
