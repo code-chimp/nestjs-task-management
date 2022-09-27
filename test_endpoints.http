@@ -7,12 +7,13 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/tasks/f124ef2b-3f25-4e84-bed8-4a7c8774f0f0
+GET http://localhost:3000/tasks/7e98c48c-f01f-42ae-838d-c1428e6f1a6b
 Authorization: Bearer {{auth_token}}
 
 
 ###
 GET http://localhost:3000/tasks
+Authorization: Bearer {{auth_token}}
 
 ###
 POST http://localhost:3000/auth/signup
@@ -33,7 +34,8 @@ Content-Type: application/json
 }
 > {%
   client.test('request success', () => {
-    client.assert(response.status === 200, "incorrect response");
+    const expected = 200;
+    client.assert(response.status === expected, `incorrect response: expected ${expected}, recv'd ${response.status}`);
   });
 
   client.test('response is json', () => {
@@ -48,7 +50,7 @@ Content-Type: application/json
     client.assert(!!response.body.accessToken, "response have no tokken");
   });
 
-  client.log(JSON.stringify(response.body));
+  // client.log(JSON.stringify(response.body));
 
   client.global.set("auth_token", response.body.accessToken);
  %}
@@ -59,8 +61,8 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "title": "GRRfaAArGGHg",
-  "description": "Lugurk"
+  "title": "maken magic",
+  "description": "yo frip this ya hippies"
 }
 
 

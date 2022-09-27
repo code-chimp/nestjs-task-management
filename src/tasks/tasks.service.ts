@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import User from '../auth/entities/user.entity';
 import CreateTaskDto from './dto/create-task.dto';
 import UpdateTaskDto from './dto/update-task.dto';
 import GetTasksFilterDto from './dto/get-tasks-filter.dto';
@@ -21,17 +22,20 @@ export default class TasksService {
     private tasksRepository: Repository<Task>,
   ) {}
 
-  async get(id: string): Promise<Task> {
-    try {
-      return await this.tasksRepository.findOneOrFail(id);
-    } catch (e) {
-      this.logger.error(`task with id ${id} not found`, e.stack);
+  async get(id: string, user: User): Promise<Task> {
+    const task = await this.tasksRepository.findOne({ where: { id, user } });
+
+    if (!task) {
+      this.logger.error(`task for user ${user.username} with id ${id} not found`);
       throw new NotFoundException(`task with id ${id} not found`);
     }
+
+    return task;
   }
 
-  async getMany({ search, status }: GetTasksFilterDto): Promise<Array<Task>> {
+  async getMany({ search, status }: GetTasksFilterDto, user: User): Promise<Array<Task>> {
     const query = this.tasksRepository.createQueryBuilder('task');
+    query.where({ user });
 
     if (status) {
       query.andWhere('task.status = :status', { status });
@@ -54,17 +58,22 @@ export default class TasksService {
     }
   }
 
-  async create(dto: CreateTaskDto): Promise<Task> {
+  async create(dto: CreateTaskDto, user: User): Promise<Task> {
     const task = this.tasksRepository.create({
       ...dto,
+      user,
       status: TaskStatus.OPEN,
     });
 
     return await this.tasksRepository.save(task);
   }
 
-  async modify(id: string, { title, description, status }: UpdateTaskDto): Promise<Task> {
-    const task = await this.get(id);
+  async modify(
+    id: string,
+    { title, description, status }: UpdateTaskDto,
+    user: User,
+  ): Promise<Task> {
+    const task = await this.get(id, user);
 
     task.title = title;
     task.description = description;
@@ -73,25 +82,26 @@ export default class TasksService {
     return await this.tasksRepository.save(task);
   }
 
-  async patchStatus(id: string, status: TaskStatus): Promise<Task> {
-    const task = await this.get(id);
+  async patchStatus(id: string, status: TaskStatus, user: User): Promise<Task> {
+    const task = await this.get(id, user);
 
     task.status = status;
 
     return await this.tasksRepository.save(task);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, user: User): Promise<void> {
     try {
-      const result = await this.tasksRepository.delete(id);
+      const result = await this.tasksRepository.delete({ id, user });
 
       if (!result.affected) {
+        this.logger.warn(`task for user ${user.username} with id ${id} not deleted`);
         throw new NotFoundException(`task with id ${id} not found`);
       }
 
       return;
     } catch (e) {
-      console.error(e);
+      this.logger.error(`task for user ${user.username} with id ${id} not deleted`, e.stack);
       throw e;
     }
   }
